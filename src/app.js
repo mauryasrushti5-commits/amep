@@ -7,6 +7,8 @@ import learningRoutes from "./routes/learning.routes.js";
 import aiRoutes from "./routes/ai.routes.js";
 import dashboardRoutes from "./routes/dashboard.routes.js";
 import teacherRoutes from "./routes/teacher.routes.js";
+import peakTimeRoutes from "./routes/peakTime.routes.js";
+import pomodoroRoutes from "./routes/pomodoro.routes.js";
 
 import errorHandler from "./middlewares/error.middleware.js";
 
@@ -21,6 +23,8 @@ app.use("/api/learning", learningRoutes);
 app.use("/api/ai", aiRoutes);
 app.use("/api/dashboard", dashboardRoutes);
 app.use("/api/teacher", teacherRoutes);
+app.use("/api/peak-time", peakTimeRoutes);
+app.use("/api/pomodoro", pomodoroRoutes);
 
 app.use(errorHandler);
 

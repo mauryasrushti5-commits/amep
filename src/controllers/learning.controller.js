@@ -1,5 +1,6 @@
 import LearningSession from "../models/LearningSession.js";
 import MasteryProfile from "../models/MasteryProfile.js";
+import StudyActivity from "../models/StudyActivity.js";
 
 /*
 CREATE / GET ACTIVE LEARNING SESSION
@@ -109,6 +110,14 @@ export const submitAttempt = async (req, res) => {
     }
 
     await masteryProfile.save();
+
+    // Log study activity
+    await StudyActivity.create({
+      userId,
+      subject: session.subject,
+      accuracy: correct ? 1 : 0,
+      responseTime: timeTaken || 0
+    });
 
     res.status(200).json({
       success: true,
