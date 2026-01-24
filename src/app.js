@@ -12,6 +12,7 @@ import pomodoroRoutes from "./routes/pomodoro.routes.js";
 import catalogRoutes from "./routes/catalog.routes.js";
 import quizRoutes from "./routes/quiz.routes.js";
 import resourcesRoutes from "./routes/resources.routes.js";
+import healthRoutes from "./routes/health.routes.js";
 
 import errorHandler from "./middlewares/error.middleware.js";
 
@@ -31,6 +32,7 @@ app.use("/api/pomodoro", pomodoroRoutes);
 app.use("/api/catalog", catalogRoutes);
 app.use("/api/quiz", quizRoutes);
 app.use("/api/resources", resourcesRoutes);
+app.use("/api/health", healthRoutes);
 
 app.use(errorHandler);
 

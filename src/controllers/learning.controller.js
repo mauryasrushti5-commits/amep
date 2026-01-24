@@ -184,3 +184,81 @@ export const endSession = async (req, res) => {
     });
   }
 };
+
+/**
+ * POST /api/learning/session/start
+ * Clean endpoint to start a new learning session
+ */
+export const startSession = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const { subject, topic, subtopic, difficulty } = req.body;
+
+    // Validate required fields
+    if (!subject || !topic) {
+      return res.status(400).json({
+        success: false,
+        message: "Subject and topic are required"
+      });
+    }
+
+    // Check for active session with same subject+topic+subtopic
+    const query = {
+      userId,
+      subject,
+      topic,
+      status: "active"
+    };
+
+    if (subtopic) {
+      query.subtopic = subtopic;
+    }
+
+    let session = await LearningSession.findOne(query);
+
+    if (session) {
+      // Return existing active session
+      return res.status(200).json({
+        success: true,
+        message: "Existing active session found",
+        sessionId: session._id,
+        subject: session.subject,
+        topic: session.topic,
+        subtopic: session.subtopic || null,
+        difficulty: session.difficulty || "medium",
+        attemptCount: session.attemptCount || 0,
+        status: "active"
+      });
+    }
+
+    // Create new session
+    session = await LearningSession.create({
+      userId,
+      subject,
+      topic,
+      subtopic: subtopic || null,
+      difficulty: difficulty || "medium",
+      status: "active",
+      attemptCount: 0
+    });
+
+    res.status(201).json({
+      success: true,
+      message: "Session started successfully",
+      sessionId: session._id,
+      subject: session.subject,
+      topic: session.topic,
+      subtopic: session.subtopic || null,
+      difficulty: session.difficulty,
+      attemptCount: session.attemptCount,
+      status: "active"
+    });
+
+  } catch (error) {
+    console.error("Start session error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to start session"
+    });
+  }
+};

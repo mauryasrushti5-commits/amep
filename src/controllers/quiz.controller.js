@@ -410,16 +410,23 @@ export const submitAttempt = async (req, res) => {
       });
     }
 
-    // Fetch mastery profile
-    const masteryProfile = await MasteryProfile.findOne({
+    // Fetch or auto-create mastery profile
+    let masteryProfile = await MasteryProfile.findOne({
       userId,
       subject: session.subject
     });
 
     if (!masteryProfile) {
-      return res.status(404).json({
-        success: false,
-        message: "Mastery profile not found"
+      // Auto-create default mastery profile for demo stability
+      masteryProfile = await MasteryProfile.create({
+        userId,
+        subject: session.subject,
+        overallLevel: "Beginner",
+        masteryPercentage: 0,
+        confidenceScore: 0.3,
+        strongConcepts: [],
+        weakConcepts: [],
+        learningSpeed: "medium"
       });
     }
 
