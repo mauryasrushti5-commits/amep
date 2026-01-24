@@ -1,6 +1,7 @@
 import LearningSession from "../models/LearningSession.js";
 import MasteryProfile from "../models/MasteryProfile.js";
 import StudyActivity from "../models/StudyActivity.js";
+import { computeConfidence } from "../utils/confidence.js";
 
 /*
 CREATE / GET ACTIVE LEARNING SESSION
@@ -92,32 +93,42 @@ export const submitAttempt = async (req, res) => {
       });
     }
 
-    // Simple mastery update logic (temporary)
-    let masteryUpdated = false;
-
-    if (correct) {
-      masteryProfile.masteryPercentage += 2;
-      masteryProfile.confidenceScore = Math.min(
-        masteryProfile.confidenceScore + 0.05,
-        1
-      );
-      masteryUpdated = true;
-    } else {
-      masteryProfile.confidenceScore = Math.max(
-        masteryProfile.confidenceScore - 0.03,
-        0
-      );
-    }
-
-    await masteryProfile.save();
+    // Determine expected response time based on difficulty
+    const expectedSeconds = session.difficulty === 'easy' ? 40 :
+                           session.difficulty === 'medium' ? 70 : 110;
 
     // Log study activity
     await StudyActivity.create({
       userId,
       subject: session.subject,
+      expectedSeconds,
       accuracy: correct ? 1 : 0,
       responseTime: timeTaken || 0
     });
+
+    const recentActivities = await StudyActivity.find({
+      userId,
+      subject: session.subject
+    })
+    .sort({ timestamp: -1 })
+    .limit(20)
+    .select('accuracy responseTime expectedSeconds');
+
+    const confidenceResult = computeConfidence({
+      activities: recentActivities
+    });
+
+    // Update confidence score
+    masteryProfile.confidenceScore = confidenceResult.confidence;
+
+    // Simple mastery update logic (temporary)
+    let masteryUpdated = false;
+    if (correct) {
+      masteryProfile.masteryPercentage += 2;
+      masteryUpdated = true;
+    }
+
+    await masteryProfile.save();
 
     res.status(200).json({
       success: true,
@@ -126,7 +137,12 @@ export const submitAttempt = async (req, res) => {
         : "There is a conceptual gap. Try again.",
       masteryUpdated,
       masteryPercentage: masteryProfile.masteryPercentage,
-      confidenceScore: masteryProfile.confidenceScore
+      confidenceScore: masteryProfile.confidenceScore,
+      confidenceBreakdown: {
+        accuracyScore: confidenceResult.accuracyScore,
+        speedScore: confidenceResult.speedScore,
+        attemptsUsed: confidenceResult.attemptsUsed
+      }
     });
 
   } catch (error) {

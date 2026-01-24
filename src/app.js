@@ -9,6 +9,9 @@ import dashboardRoutes from "./routes/dashboard.routes.js";
 import teacherRoutes from "./routes/teacher.routes.js";
 import peakTimeRoutes from "./routes/peakTime.routes.js";
 import pomodoroRoutes from "./routes/pomodoro.routes.js";
+import catalogRoutes from "./routes/catalog.routes.js";
+import quizRoutes from "./routes/quiz.routes.js";
+import resourcesRoutes from "./routes/resources.routes.js";
 
 import errorHandler from "./middlewares/error.middleware.js";
 
@@ -25,6 +28,9 @@ app.use("/api/dashboard", dashboardRoutes);
 app.use("/api/teacher", teacherRoutes);
 app.use("/api/peak-time", peakTimeRoutes);
 app.use("/api/pomodoro", pomodoroRoutes);
+app.use("/api/catalog", catalogRoutes);
+app.use("/api/quiz", quizRoutes);
+app.use("/api/resources", resourcesRoutes);
 
 app.use(errorHandler);
 

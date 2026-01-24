@@ -1,5 +1,6 @@
 import DiagnosticRecord from "../models/DiagnosticRecord.js";
 import MasteryProfile from "../models/MasteryProfile.js";
+import { clamp01 } from "../utils/confidence.js";
 
 /*
 SUBJECT LEVEL DIAGNOSTIC
@@ -33,7 +34,7 @@ export const subjectDiagnostic = async (req, res) => {
       strongConcepts: [],
       weakConcepts: [],
       learningSpeed: "medium",
-      confidenceScore: percentage / 100
+      confidenceScore: clamp01(percentage / 100)
     });
 
     await DiagnosticRecord.create({

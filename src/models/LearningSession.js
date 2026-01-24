@@ -10,6 +10,10 @@ const learningSessionSchema = new mongoose.Schema(
     status: {
       type: String,
       default: "active"
+    },
+    attemptCount: {
+      type: Number,
+      default: 0
     }
   },
   { timestamps: true }

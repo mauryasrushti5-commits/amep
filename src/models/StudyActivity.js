@@ -11,6 +11,20 @@ const studyActivitySchema = new mongoose.Schema(
       type: String,
       required: true
     },
+    topic: {
+      type: String
+    },
+    subtopic: {
+      type: String
+    },
+    sessionId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "LearningSession"
+    },
+    expectedSeconds: {
+      type: Number,
+      required: true
+    },
     accuracy: {
       type: Number, // 0 or 1
       required: true
